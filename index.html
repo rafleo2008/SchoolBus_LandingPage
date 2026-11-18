@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Transporte Escolar Electrificado en Bogotá</title>
+  <script src="datos-offline.js"></script>
   <style>
     :root {
       --g: #0B7A38;
@@ -87,7 +88,26 @@
       border-top: 1px solid rgba(255, 255, 255, .15);
       color: #ffffff;
       /* Asegura que el texto y los enlaces se lean sobre el fondo oscuro */
-      padding: 40px 0
+      padding: 40px 0;
+      font-size: .8rem;
+      font-weight: 400;
+      line-height: 1.6
+    }
+    footer p {
+      margin: 0 0 12px;
+      color: rgba(255, 255, 255, .78);
+      text-align: left
+    }
+    footer a {
+      color: rgba(255, 255, 255, .9)
+    }
+    footer p:last-child {
+      margin: 0;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, .15);
+      font-size: .72rem;
+      letter-spacing: .02em;
+      color: rgba(255, 255, 255, .65)
     }
     .nav {
       display: flex;
@@ -1546,7 +1566,147 @@
     <section id="costos">
       <div class="w">
         <h2>Estima y compara costos mediante la herramienta de Costo Total de Propiedad (TCO)</h2>
-        <p >El costo total de propiedad suma los costos de inversión, operación y mantenimiento, financiación e incentivos durante toda la vida útil del bus para comparar la inversión total al finalizar la vida útil del vehículo. Aunque no se alcance la paridad, permite identificar bajo qué parámetros la operación de un bus escolar es más económica que sus contrapartes a combustión interna</p>  
+        <p>Las inversiones en flota se suelen evaluar desde la inversión inicial, sin contemplar los gastos de operación y mantenimiento. El TCO permite realizar una comparación completa para que las empresas y los colegios puedan tomar decisiones con datos a largo plazo.</p>
+        <h3>¿Qué es el TCO?</h3>
+        <p>El costo total de propiedad permite evaluar los gastos totales de un vehículo a lo largo de su vida útil. Estos gastos incluyen la adquisición del vehículo y la infraestructura de carga (CAPEX), gastos de financiamiento (FINEX) y gastos de operación y mantenimiento (OPEX). La comparación entre diferentes tecnologías permite evaluar la viabilidad financiera, de acuerdo al contexto de la ciudad o ruta de operación.</p>
+        <h3>Componentes del TCO </h3>
+            <!-- ===================== INICIO: Gráfica TCO ===================== -->
+        <style>
+        .tcod{--vida:#F2A08A;--vida-d:#c9573b;--inv:#17A9C4;--op:#1F1C5C;--fin:#F0B800;--ink:#10303A;--mut:#4A6670;
+          font-family:"Segoe UI",system-ui,sans-serif;color:var(--ink);background:#fff;border:1px solid #cfe5d6;border-radius:12px;padding:22px;max-width:1080px;margin:0 auto;box-sizing:border-box}
+        .tcod *{box-sizing:border-box}
+        .tcod h3{margin:0 0 4px;font-size:1.15rem}
+        .tcod-sub{margin:0 0 16px;font-size:.88rem;color:var(--mut)}
+        .tcod-scroll{overflow-x:auto;padding:4px 2px 8px}
+        .tcod-g{--c0:1.7fr;display:grid;grid-template-columns:var(--c0) repeat(var(--n,15),1fr);column-gap:3px;row-gap:8px;min-width:640px;color:#fff;text-align:center}
+        .tcod-c{border-radius:4px;cursor:pointer;outline:none;transition:opacity .2s,transform .2s,box-shadow .2s;
+          display:flex;align-items:center;justify-content:center;font-weight:600;line-height:1.2}
+        .tcod-c:focus-visible{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--ink)}
+        /* Vida útil */
+        .tcod-vt{grid-column:1/-1;background:var(--vida);padding:8px;font-size:1rem}
+        .tcod-yr{background:var(--vida);padding:7px 0;font-size:.9rem;font-weight:500;justify-content:flex-start;padding-left:8px}
+        /* Inversión (año 0) */
+        .tcod-inv{grid-column:1;grid-row:3/span 2;align-self:start;justify-content:flex-start;flex-direction:column;gap:10px;background:transparent;color:var(--inv);padding:0}
+        .tcod-inv .lbl{background:var(--inv);color:#fff;border-radius:4px;padding:10px 6px;width:100%;font-size:.98rem}
+        .tcod-inv svg{width:80%;max-width:110px;height:auto}
+        /* Operación */
+        .tcod-op{grid-column:2/-1;grid-row:3;flex-direction:column;gap:12px;background:transparent;padding:0}
+        .tcod-op .bar{background:var(--op);border-radius:4px;padding:8px;width:100%;font-size:1rem}
+        .tcod-ic{display:flex;gap:9%;justify-content:center;color:var(--op);width:100%}
+        .tcod-ic span{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.78rem;font-weight:600;color:var(--op)}
+        .tcod-ic svg{width:48px;height:48px}
+        /* Financieros */
+        .tcod-fin{grid-column:2/-1;grid-row:4;flex-direction:column;gap:10px;background:transparent;padding:0}
+        .tcod-fin .bar{background:var(--fin);border-radius:4px;padding:8px;width:100%;font-size:1rem}
+        .tcod-fin svg{width:78px;height:auto;color:var(--fin)}
+        /* Resaltado: al activar un componente, los demás se atenúan */
+        .tcod-g.hv .tcod-c{opacity:.28}
+        .tcod-g.hv .tcod-c.on{opacity:1}
+        .tcod-g.hv .tcod-c.on:not(.tcod-yr):not(.tcod-vt){transform:translateY(-2px)}
+        /* Panel de explicación */
+        .tcod-info{margin-top:14px;border-radius:10px;padding:14px 18px;background:#F0FBF3;border-left:6px solid #0B7A38;min-height:84px;transition:border-color .2s,background .2s}
+        .tcod-info b{display:block;font-size:1.02rem;margin-bottom:2px}
+        .tcod-info p{margin:0;font-size:.95rem}
+        .tcod-info[data-k=vida]{border-color:var(--vida-d);background:#fdf0ec}
+        .tcod-info[data-k=inv]{border-color:var(--inv);background:#e8f7fa}
+        .tcod-info[data-k=op]{border-color:var(--op);background:#ececf5}
+        .tcod-info[data-k=fin]{border-color:#c79900;background:#fdf6de}
+        /* Celular: el diagrama se compacta en lugar de cortarse */
+        @media(max-width:640px){
+          .tcod{padding:16px 12px}
+          .tcod-scroll{overflow:visible;padding:0}
+          .tcod-g{--c0:2.7fr;min-width:0;column-gap:2px;row-gap:6px}
+          .tcod-vt,.tcod-op .bar,.tcod-fin .bar{font-size:.8rem;padding:6px 4px}
+          .tcod-yr{font-size:.6rem;padding:5px 0;justify-content:center}
+          .tcod-inv .lbl{font-size:.66rem;padding:6px 2px}
+          .tcod-inv svg{width:92%}
+          .tcod-ic{gap:6%}.tcod-ic svg{width:30px;height:30px}.tcod-ic span{font-size:.62rem}
+          .tcod-fin svg{width:52px}
+        }
+        .tcod-hint{margin:8px 0 0;font-size:.8rem;color:var(--mut)}
+        </style>
+
+      <figure class="tcod" id="tcod" aria-labelledby="tcod-t" style="margin:0 auto">
+        <h3 id="tcod-t">¿Qué incluye el costo total de propiedad?</h3>
+        <p class="tcod-sub">Costos de un bus a lo largo de su vida útil</p>
+        <div class="tcod-scroll">
+          <div class="tcod-g" id="tcod-g">
+            <div class="tcod-c tcod-vt" data-k="vida" tabindex="0" role="button" aria-describedby="tcod-info">Vida útil (años)</div>
+            <!-- años 0 a 15: se generan con el script -->
+            <div class="tcod-c tcod-inv" data-k="inv" tabindex="0" role="button" aria-describedby="tcod-info">
+              <span class="lbl">Costos de inversión</span>
+              <svg viewBox="0 0 120 80" aria-hidden="true"><g fill="currentColor">
+                <path d="M14 6h92a12 12 0 0 1 12 12v40a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V18A12 12 0 0 1 14 6z"/>
+              </g><g fill="#fff">
+                <rect x="12" y="16" width="20" height="18" rx="3"/><rect x="38" y="16" width="20" height="18" rx="3"/><rect x="64" y="16" width="20" height="18" rx="3"/><rect x="90" y="16" width="20" height="18" rx="3"/>
+                <rect x="8" y="44" width="104" height="4" rx="2"/>
+              </g><g fill="currentColor" stroke="#fff" stroke-width="4">
+                <circle cx="30" cy="66" r="11"/><circle cx="90" cy="66" r="11"/></g></svg>
+            </div>
+            <div class="tcod-c tcod-op" data-k="op" tabindex="0" role="button" aria-describedby="tcod-info">
+              <span class="bar">Costos de operación</span>
+              <span class="tcod-ic">
+                <span><svg viewBox="0 0 48 48" aria-hidden="true">
+                  <g fill="currentColor">
+                    <path d="M8 16a4 4 0 0 1 4-4h10l4 4h4a4 4 0 0 1 4 4v22a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4z"/>
+                    <rect x="12" y="6" width="9" height="5" rx="1.5"/>
+                    <path d="M34 20l8-10 3 2-8 11z"/></g><path d="M14 22h14" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>Combustible</span>
+                <span><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="13" width="36" height="22" rx="3" fill="none" stroke="currentColor" stroke-width="4"/><rect x="41" y="19" width="4" height="10" rx="1.5" fill="currentColor"/><path d="M25 15l-9 11h7l-3 8 10-12h-7z" fill="currentColor"/></svg>Energía</span>
+                <span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M20.5 3h7l1.2 5.6a16 16 0 0 1 4.3 1.8l4.8-3.1 5 5-3.1 4.8a16 16 0 0 1 1.8 4.3L47 22.5v7l-5.6 1.2a16 16 0 0 1-1.8 4.3l3.1 4.8-5 5-4.8-3.1a16 16 0 0 1-4.3 1.8L27.5 49h-7l-1.2-5.6a16 16 0 0 1-4.3-1.8l-4.8 3.1-5-5 3.1-4.8a16 16 0 0 1-1.8-4.3L1 29.5v-7l5.6-1.2a16 16 0 0 1 1.8-4.3L5.3 12.3l5-5 4.8 3.1a16 16 0 0 1 4.3-1.8zM24 18a8 8 0 1 0 0 16 8 8 0 0 0 0-16z" transform="scale(.92) translate(2 0)"/></svg>Mantenimiento</span>
+              </span>
+            </div>
+            <div class="tcod-c tcod-fin" data-k="fin" tabindex="0" role="button" aria-describedby="tcod-info">
+              <span class="bar">Costos financieros</span>
+              <svg viewBox="0 0 90 44" aria-hidden="true"><rect x="3" y="3" width="84" height="38" rx="2" fill="none" stroke="currentColor" stroke-width="4"/><g fill="currentColor"><rect x="12" y="12" width="40" height="4" rx="2"/><rect x="12" y="20" width="28" height="4" rx="2"/><rect x="12" y="30" width="66" height="4" rx="2"/></g><path d="M58 22c4-6 7 4 11-2s6 2 9-1" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="tcod-info" id="tcod-info" aria-live="polite"><b id="tcod-it">Explora los componentes</b><p id="tcod-ip">Pasa el cursor (o toca) cada parte del diagrama para ver qué incluye.</p></div>
+      </figure>
+
+      <script>
+      (function(){
+        var root=document.getElementById('tcod');if(!root)return;
+        var TXT={
+          vida:['Vida útil','Periodo en el cual se estima que se utilizará el bus.'],
+          inv:['Costos de inversión','Inversiones para compras puntuales de buses e infraestructura de recarga.'],
+          op:['Costos de operación','Constan del combustible, la energía y el mantenimiento a lo largo de la vida útil del activo.'],
+          fin:['Costos financieros','Intereses de los préstamos para la adquisición de bienes (costos de inversión).']
+        };
+        var DEF=['Explora los componentes','Pasa el cursor (o toca) cada parte del diagrama para ver qué incluye.'];
+        var g=root.querySelector('#tcod-g'),info=root.querySelector('#tcod-info'),it=root.querySelector('#tcod-it'),ip=root.querySelector('#tcod-ip');
+
+        /* Años 0 a 15 (fila 2). Cambia ANIOS si quieres otra vida útil. */
+        var ANIOS=15,ref=root.querySelector('.tcod-inv'),h='';
+        for(var a=0;a<=ANIOS;a++)h+='<div class="tcod-c tcod-yr" data-k="vida" aria-hidden="true">'+a+'</div>';
+        ref.insertAdjacentHTML('beforebegin',h);
+        g.style.setProperty('--n',ANIOS);
+
+        var fijo=null;
+        function act(k){
+          g.classList.toggle('hv',!!k);
+          g.querySelectorAll('.tcod-c').forEach(function(c){c.classList.toggle('on',c.getAttribute('data-k')===k)});
+          var t=k?TXT[k]:DEF;it.textContent=t[0];ip.textContent=t[1];
+          if(k)info.setAttribute('data-k',k);else info.removeAttribute('data-k');
+        }
+        var comp=function(e){return e.target.closest&&e.target.closest('.tcod-c')};
+        g.addEventListener('pointerover',function(e){if(e.pointerType==='touch')return;var c=comp(e);if(c)act(c.getAttribute('data-k'))});
+        g.addEventListener('pointerleave',function(e){if(e.pointerType==='touch')return;act(fijo)});
+        /* Toque o clic: deja fijo el componente; tocar de nuevo lo suelta */
+        g.addEventListener('click',function(e){var c=comp(e);if(!c)return;var k=c.getAttribute('data-k');fijo=(fijo===k)?null:k;act(fijo)});
+        g.addEventListener('focusin',function(e){var c=comp(e);if(c)act(c.getAttribute('data-k'))});
+        g.addEventListener('focusout',function(){act(fijo)});
+        g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){var c=comp(e);if(c){e.preventDefault();c.click()}}});
+      })();
+      </script>
+<!-- ===================== FIN gráfica TCO ===================== -->
+
+
+
+
+        <figure style="margin:24px 0 0">
+          <figcaption class="vsrc">Fuente: <a href="https://es.wri.org/insights/que-es-el-costo-total-de-propiedad-y-cual-es-su-importancia-para-impulsar-la-movilidad" target="_blank" rel="noopener">WRI Colombia: ¿Qué es el costo total de propiedad y cuál es su importancia para impulsar la movilidad cero emisiones?</a></figcaption>
+        </figure>
         <h3 style="margin-top:40px"> Sobre el costo total de propiedad (TCO) </h3>
         <div class="grid" data-s="tco"></div>
         <h3 style="margin-top:40px">Los nuevos modelos de negocio y su apliación en el TCO </h3>
@@ -1735,7 +1895,7 @@
 
     <section class="alt" id="mitos">
       <div class="w">
-        <h2>Mitos y preguntas sobre la movilidad eléctrica</h2>
+        <h2>Preguntas sobre la movilidad eléctrica</h2>
         <div id="mitosg"></div>
       </div>
     </section>
@@ -1754,7 +1914,6 @@
         <h3 style="margin-top:48px">El transporte escolar aún va despacio</h3>
         <div id="brecha" role="img" aria-label="Comparación de buses eléctricos entre transporte público y especial"></div>
         <p class="lead">La brecha es una oportunidad para que colegios y operadores marquen el paso.</p>
-        <p><small class="pend">[PENDIENTE: gráfica de matrículas 2024–2026]</small></p>
       </div>
     </section>
 
@@ -1762,9 +1921,7 @@
   <footer>
     <div class="w">
       <p id="pie"></p>
-      <p>Logos: WRI · Breathe Cities · Clean Air Fund · C40 · ESBI
-        <small class="pend">[PENDIENTE: archivos de logos]</small>
-      </p>
+      <p>WRI Colombia · Breathe Cities · Clean Air Fund · C40 · Electric School Bus Initiative (ESBI)</p>
     </div>
   </footer>
 
@@ -2013,24 +2170,10 @@
         alto: 'Alto',
         custom: 'Personalizado'
       };
-      /* Supuestos mostrados en pantalla y en el reporte: edítalos si cambia la metodología */
-      var ASSUME = [
-        'Cifras en pesos colombianos (COP) nominales; las tablas y gráficas muestran millones de pesos (M COP), llevados a valor presente con la tasa de descuento ingresada (salvo que se elija la vista nominal en el flujo de caja).',
-        'La comparación se limita a dos tecnologías: diésel y eléctrico. El gas natural (GNV) no se modela.',
-        'Los precios de energía ingresados rigen en el año 1 y aumentan cada año (desde el año 2) según la inflación de cada tecnología; cada tecnología puede tener un escenario distinto.',
-        'El precio de lista de los vehículos, la inversión en estaciones y el mantenimiento (COP/km) se mantienen constantes, sin inflación.',
-        'El descuento por IVA (UPME) se expresa como porcentaje del precio de lista y se resta del precio de compra. No se considera descuento por arancel ni otros efectos tributarios.',
-        'Operación constante: mismos km/día y días de operación todos los años; sin degradación de baterías ni pérdida de rendimiento.',
-        'Crédito con tasa fija y cuotas anuales iguales sobre el precio neto del descuento de IVA; la tasa es una para eléctricos y otra para diésel.',
-        'La inversión en estación (tanque y surtidor de diésel o carga eléctrica) es un costo único por vehículo en el año 0, solo con infraestructura propia; no incluye operación de la estación ni reventa.',
-        'El valor residual es un porcentaje del precio de lista y se recibe al final de la vida útil.',
-        'CAPEX = precio neto del descuento de IVA + estaciones − valor residual. OPEX = energía + mantenimiento. FINEX = desembolso del crédito (negativo, año 0) + cuotas. TCO = CAPEX + OPEX + FINEX.',
-        'En la gráfica de barras, los filtros CAPEX, OPEX y FINEX suman solo las categorías seleccionadas, a valor presente. Un FINEX negativo se dibuja bajo el eje y el total mostrado es el neto.',
-        'La paridad es el momento en que el flujo de caja acumulado de la tecnología de mayor costo inicial iguala al de la otra, con las categorías seleccionadas; el año se interpola linealmente.',
-        'No incluye otros incentivos, impuestos, seguros, reemplazo de baterías ni renting.',
-        'Los escenarios de inflación, los beneficios y los datos precargados son ejemplos ilustrativos, no datos reales.',
-        'El costo por km es el TCO dividido entre los km totales de la vida útil (sin descontar los km).'
-      ];
+      /* Aumento anual del costo de mantenimiento (4 %), aplicado desde el año 2 */
+      var MANT_G = 0.04;
+      /* Supuestos mostrados en pantalla y en el reporte: se cargan desde tco_parametros.csv (grupo = supuesto, clave = número, etiqueta = texto) */
+      var ASSUME = [];
       /* ======================================================================= */
 
       var TECH = [{
@@ -2259,7 +2402,7 @@
           af = 0,
           t;
         for (t = 1; t <= P.n; t++) pvC += cuota / Math.pow(1 + d, t);
-        for (t = 1; t <= N; t++) af += 1 / Math.pow(1 + d, t);
+        for (t = 1; t <= N; t++) af += Math.pow(1 + MANT_G, t - 1) / Math.pow(1 + d, t);
         var veh = pn - F(k, 'p') * F(k, 'v') / 100 / Math.pow(1 + d, N),
           sta = own ? F(k, 'i') : 0,
           fin = pvC - L;
@@ -2299,7 +2442,7 @@
         for (t = 1; t <= N; t++) {
           f = pv ? Math.pow(1 + P.d, -t) : 1;
           cap.push(-(t === N ? pl * F(k, 'v') / 100 : 0) * f);
-          opx.push((e0 * Math.pow(1 + g, t - 1) + m) * f);
+          opx.push((e0 * Math.pow(1 + g, t - 1) + m * Math.pow(1 + MANT_G, t - 1)) * f);
           fnx.push((t <= P.n ? cuota : 0) * f);
         }
         return {
@@ -2782,8 +2925,16 @@
           }).join('') + '</tr>';
 
         $('#bce-assume').innerHTML = ASSUME.map(function(a) {
-          return '<li>' + a + '</li>'
+          return '<li>' + String(a).replace(/[&<>"]/g, function(c) {
+            return {
+              '&': '&amp;',
+              '<': '&lt;',
+              '>': '&gt;',
+              '"': '&quot;'
+            }[c];
+          }) + '</li>'
         }).join('');
+        $('#bce-assume').closest('details').hidden = !ASSUME.length;
         last = {
           R: R,
           S: S,
@@ -3153,12 +3304,14 @@
           }))
         })), [215, 150, 150], 8.5);
 
-        h2('Supuestos');
-        ASSUME.forEach(function(a, i) {
-          need(24);
-          para((i + 1) + '. ' + a, M + 2, 8.5, 505, INK);
-          y -= 2;
-        });
+        if (ASSUME.length) {
+          h2('Supuestos');
+          ASSUME.forEach(function(a, i) {
+            need(24);
+            para((i + 1) + '. ' + a, M + 2, 8.5, 505, INK);
+            y -= 2;
+          });
+        }
         y -= 6;
         para('Este reporte depende de los datos ingresados. Los valores precargados y los escenarios son ilustrativos hasta que se reemplacen por datos reales.', M, 8, 515, MUT);
         pg.push(cur2);
@@ -3300,6 +3453,7 @@
       }
 
       function readCfg(txt) {
+        var sup = [];
         csvRows(txt).forEach(function(r) {
           var g = r.grupo,
             v = nv(r.valor);
@@ -3322,7 +3476,18 @@
             LIM['k:' + r.clave] = r;
           } else if (g === 'escenario') {
             if (v !== null && SCEN[r.clave] && TT.indexOf(r.tecnologia) > -1) SCEN[r.clave][r.tecnologia] = v;
+          } else if (g === 'supuesto') {
+            if (r.etiqueta) sup.push({
+              n: nv(r.clave),
+              t: r.etiqueta
+            });
           }
+        });
+        sup.sort(function(a, b) {
+          return (a.n === null ? Infinity : a.n) - (b.n === null ? Infinity : b.n);
+        });
+        ASSUME = sup.map(function(s) {
+          return s.t;
         });
         var ok = [];
         TIPOS.forEach(function(t) {
